@@ -65,13 +65,8 @@ module tb_ram_4x8;
 endmodule
 ```
 ### Simulation Output for RAM
-*
-*
-*
-*
-Paste the output here
-*
-*
+<img width="1919" height="1079" alt="Ram" src="https://github.com/user-attachments/assets/a5f3b635-eb08-4cc3-9658-a5e8f821d2c8" />
+
 ### 2. ROM Module
 ```
 // 4x8 ROM with Preloaded Data
@@ -96,13 +91,7 @@ module tb_rom_4x8;
   
 ```
 ### Simulation Output for ROM
-*
-*
-*
-*
-Paste the output here
-*
-*
+<img width="1919" height="1079" alt="Rom" src="https://github.com/user-attachments/assets/91d997c3-8be8-4bda-b6fa-f6677d37411b" />
 
 
 ### 3. FIFO Memory Module
@@ -159,13 +148,8 @@ module tb_fifo_4x8;
 endmodule
 ```
 ### Simulation Output for FIFO
-*
-*
-*
-*
-Paste the output here
-*
-*
+<img width="1919" height="1079" alt="FIFO" src="https://github.com/user-attachments/assets/7d1e0647-64dc-42c3-b225-1ce1e7ef4fcf" />
+
 ### Result
 
 The RAM, ROM, and FIFO memory modules were successfully designed, simulated, and verified using Verilog HDL in Vivado Design Suite.
