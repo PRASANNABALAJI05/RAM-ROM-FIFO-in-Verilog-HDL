@@ -29,73 +29,112 @@ FIFO is a sequential buffer that stores data such that the **first data written 
 
 ### **1. RAM Module**
 ```verilog
-// 4x8 RAM with Read and Write Operations
-module ram_4x8 (
-    input clk,
-    input we,
-    input [1:0] addr,
-    input [7:0] data_in,
-    output reg [7:0] data_out
-);
-    reg [7:0] memory [3:0];
-
+module Ram(
+    input clk,rst,en,
+    input [7:0]datain,
+    input [9:0]address,
+    output reg [7:0]dataout
+    );
+    reg [7:0]mem_1kb_ram[1023:0];
+    always@(posedge clk)
+        begin
+            if(rst)
+                dataout <= 8'b0;
+            else if(en)
+                mem_1kb_ram[address] <= datain;
+            else 
+                dataout <= mem_1kb_ram[address];        
+        end
 endmodule
 ```
 ### Testbench for RAM
-```
-module tb_ram_4x8;
-    reg clk, we;
-    reg [1:0] addr;
-    reg [7:0] data_in;
-    wire [7:0] data_out;
-
-    ram_4x8 uut(clk, we, addr, data_in, data_out);
-
-    always #5 clk = ~clk;
-
-    initial begin
-        clk = 0; we = 0;
-        addr = 2'b00; data_in = 8'h00;
-        #10 we = 1; addr = 2'b00; data_in = 8'hA5; // Write A5 at addr 00
-        #10 addr = 2'b01; data_in = 8'h3C;         // Write 3C at addr 01
-        #10 we = 0; addr = 2'b00;                  // Read addr 00
-        #10 addr = 2'b01;                          // Read addr 01
-        #10 $finish;
-    end
+```verilog
+module Ram_tb;
+    reg clk_t,rst_t,en_t;
+    reg [7:0]datain_t;
+    reg [9:0]address_t;
+    wire [7:0]dataout_t;
+    
+   Ram dut(.clk(clk_t),.rst(rst_t),.en(en_t),.datain(datain_t),
+                                            .address(address_t),.dataout(dataout_t)); 
+     initial 
+        begin
+         clk_t = 1'b0;
+         rst_t = 1'b1;
+       #100
+         rst_t = 1'b0;
+         en_t = 1'b1;
+         address_t = 10'd800;
+         datain_t = 8'd50;
+       #100
+         address_t = 10'd900;
+         datain_t = 8'd60;
+       #100
+         en_t = 1'b0;
+         address_t = 10'd800;
+       #100
+         address_t = 10'd900;
+       end
+       always 
+        #10 clk_t = ~clk_t;          
 endmodule
 ```
 ### Simulation Output for RAM
 <img width="1919" height="1079" alt="Ram" src="https://github.com/user-attachments/assets/a5f3b635-eb08-4cc3-9658-a5e8f821d2c8" />
 
 ### 2. ROM Module
-```
-// 4x8 ROM with Preloaded Data
-module rom_4x8 (
-    input [1:0] addr,
-    output reg [7:0] data_out
-);
-    reg [7:0] memory [3:0];
-
-
-
+```verilog
+/module Rom(input clk,rst,
+   input [9:0]address,
+   output reg [7:0]dataout
+ );
+   reg [7:0] Rom[1023:0];
+   integer i;
+   initial
+       begin
+           for(i=0;i<1024;i=i+1)
+               Rom[i] = $random;
+           end
+    always@(posedge clk)
+       begin
+           if(rst)
+               dataout <= 8'b0;
+           else
+               dataout <= Rom[address];
+         end
 endmodule
 ```
 ### Testbench for ROM
-```
-module tb_rom_4x8;
-    reg [1:0] addr;
-    wire [7:0] data_out;
-
-    rom_4x8 uut(addr, data_out);
-
-  
+```verilog
+module Rom_tb;
+    reg clk_t,rst_t;
+    reg [9:0]address_t;
+    wire [7:0]dataout_t;
+    
+  Rom dut(.clk(clk_t),.rst(rst_t),.address(address_t),.dataout(dataout_t));
+    
+    initial
+       begin
+           clk_t = 1'b0;
+           rst_t = 1'b1;
+        #100
+           rst_t = 1'b0;
+           address_t = 10'd700;
+        #100
+           address_t = 10'd800;
+        #100
+           address_t = 10'd900;
+       end
+    always
+        #10 clk_t = ~clk_t;   
+endmodule
 ```
 ### Simulation Output for ROM
 <img width="1919" height="1079" alt="Rom" src="https://github.com/user-attachments/assets/91d997c3-8be8-4bda-b6fa-f6677d37411b" />
 
 
 ### 3. FIFO Memory Module
-```
+```verilog
 // 4x8 FIFO Memory with Read and Write Operations
 module fifo_4x8 (
     input clk, reset, wr_en, rd_en,
@@ -126,7 +165,7 @@ module fifo_4x8 (
 endmodule
 ```
 ### Testbench for FIFO
-```
+```verilog
 module tb_fifo_4x8;
     reg clk, reset, wr_en, rd_en;
     reg [7:0] data_in;
